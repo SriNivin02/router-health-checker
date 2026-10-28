@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <meta name="description" content="One-click security check for your Wi-Fi router. Check. Score. Fix.">
+  <title>Router Health Checker</title>
+  <link rel="manifest" href="/static/manifest.json">
+  <link rel="stylesheet" href="/static/css/theme.css">
+</head>
+<body>
+
+<!-- ================= LOGIN & ONBOARDING ================= -->
+<section id="login">
+  <div class="hero">
+    <div class="logo">
+      <div class="mark">🛡️</div>
+      <span>Router Health Checker</span>
+    </div>
+    <div>
+      <h1 data-i18n="heroTitle">Check. Score. Fix.</h1>
+      <p data-i18n="heroSub">A one-click security check for your Wi-Fi router. Simple results, in your own language.</p>
+    </div>
+    <div class="steps">
+      <div>▶️ Run</div>
+      <div>🔍 Scan</div>
+      <div>💯 Score</div>
+      <div>🛠️ Fix</div>
+    </div>
+  </div>
+
+  <div class="login-side">
+    <div class="login-card">
+      <h2 data-i18n="welcome">Welcome 👋</h2>
+      <p class="sub" data-i18n="pickLang">Choose your language and sign in</p>
+      
+      <!-- Language Picker 3x2 Grid -->
+      <div class="langs" id="langs">
+        <button class="lang active" data-lang="en"><span>🇬🇧</span>English</button>
+        <button class="lang" data-lang="ta"><span>🇮🇳</span>தமிழ்</button>
+        <button class="lang" data-lang="hi"><span>🇮🇳</span>हिन्दी</button>
+        <button class="lang" data-lang="te"><span>🇮🇳</span>తెలుగు</button>
+        <button class="lang" data-lang="ml"><span>🇮🇳</span>മലയാളം</button>
+        <button class="lang" data-lang="kn"><span>🇮🇳</span>ಕನ್ನಡ</button>
+      </div>
+
+      <div class="field">
+        <label data-i18n="user">Username</label>
+        <div class="input">
+          <span>👤</span>
+          <input id="u" placeholder="name@example.com" value="demo@family.com" autocomplete="username">
+        </div>
+      </div>
+
+      <div class="field">
+        <label data-i18n="pass">Password</label>
+        <div class="input">
+          <span>🔑</span>
+          <input id="p" type="password" value="demo123456" autocomplete="current-password">
+        </div>
+      </div>
+
+      <button class="btn" id="loginBtn" data-i18n="signin">Sign in →</button>
+      <button class="btn ghost" id="demoBtn" style="margin-top:10px" data-i18n="demoBtn">Explore Demo Mode 🧪</button>
+      
+      <div class="secure">
+        <span>🔒</span>
+        <span data-i18n="secure">Your results stay on your own device</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= APP SHELL ================= -->
+<div id="app" class="hidden">
+  <aside>
+    <div class="logo">
+      <div class="mark">🛡️</div>
+      <span>Router Health</span>
+    </div>
+    <nav class="nav" id="nav">
+      <button data-page="dash" class="active"><span class="ic">🏠</span><b data-i18n="nDash">Dashboard</b></button>
+      <button data-page="scan"><span class="ic">🛡️</span><b data-i18n="nScan">Router Check</b></button>
+      <button data-page="stab"><span class="ic">📈</span><b data-i18n="nStab">Stability</b></button>
+      <button data-page="speed"><span class="ic">⚡</span><b data-i18n="nSpeed">Speed</b></button>
+      <button data-page="ai"><span class="ic">🤖</span><b data-i18n="nAi">AI Helper</b></button>
+      <button data-page="settings"><span class="ic">⚙️</span><b data-i18n="nSettings">Settings</b></button>
+    </nav>
+    <div class="side-foot">
+      <b>🌿 <span data-i18n="ethTitle">Safe &amp; ethical</span></b>
+      <span data-i18n="ethSide">Scans only your own router. Read-only. Nothing is changed.</span>
+    </div>
+  </aside>
+
+  <main>
+    <div class="topbar">
+      <div>
+        <h2 id="pageTitle" data-i18n="nDash">Dashboard</h2>
+        <p id="pageSub" data-i18n="heroSub">Overview of your network health</p>
+      </div>
+      <div class="tools">
+        <!-- 12 Languages Dropdown -->
+        <select class="pill" id="langSel" aria-label="Select Language">
+          <option value="en">🌐 English</option>
+          <option value="hi">🌐 हिन्दी</option>
+          <option value="ta">🌐 தமிழ்</option>
+          <option value="te">🌐 తెలుగు</option>
+          <option value="kn">🌐 ಕನ್ನಡ</option>
+          <option value="ml">🌐 മലയാളം</option>
+          <option value="bn">🌐 বাংলা</option>
+          <option value="mr">🌐 मराठी</option>
+          <option value="ur">🌐 اردو</option>
+          <option value="ar">🌐 العربية</option>
+          <option value="es">🌐 Español</option>
+          <option value="fr">🌐 Français</option>
+        </select>
+        
+        <!-- Theme Toggle -->
+        <button class="pill" id="themeBtn" title="Toggle Theme" aria-label="Toggle Theme">🌙</button>
+
+        <!-- Text Size Controls -->
+        <div class="pill" style="gap:4px">
+          <button class="font-btn" data-size="sm" style="min-width:28px;min-height:28px;background:none;color:var(--text);font-weight:700">A−</button>
+          <button class="font-btn" data-size="md" style="min-width:28px;min-height:28px;background:none;color:var(--text);font-weight:700">A</button>
+          <button class="font-btn" data-size="lg" style="min-width:28px;min-height:28px;background:none;color:var(--text);font-weight:700">A+</button>
+        </div>
+
+        <div class="avatar" id="userAvatar">D</div>
+      </div>
+    </div>
+
+    <!-- ================= 1. DASHBOARD ================= -->
+    <section class="page active" id="dash">
+      <div class="grid g4" style="margin-bottom:20px">
+        <div class="card stat"><div class="bubble b-green">✅</div><div><div class="v" id="dScore">72</div><div class="l" data-i18n="sScore">Security score</div></div></div>
+        <div class="card stat"><div class="bubble b-cyan">⚡</div><div><div class="v">48 <small style="font-size:14px">Mbps</small></div><div class="l" data-i18n="sSpeed">Download speed</div></div></div>
+        <div class="card stat"><div class="bubble b-blue">📱</div><div><div class="v">5</div><div class="l" data-i18n="sDev">Devices online</div></div></div>
+        <div class="card stat"><div class="bubble b-amber">⚠️</div><div><div class="v">3</div><div class="l" data-i18n="sIssues">Things to fix</div></div></div>
+      </div>
+
+      <div class="grid g2">
+        <div class="card">
+          <div class="score-wrap">
+            <div class="gauge">
+              <svg width="210" height="210" viewBox="0 0 210 210" aria-label="Security score gauge">
+                <circle cx="105" cy="105" r="90" fill="none" stroke="var(--line)" stroke-width="18"/>
+                <circle id="ring" cx="105" cy="105" r="90" fill="none" stroke="var(--warn)" stroke-width="18" stroke-linecap="round" stroke-dasharray="565.5" stroke-dashoffset="158" style="transition:stroke-dashoffset 1s, stroke .5s"/>
+              </svg>
+              <div class="center">
+                <div>
+                  <div class="num" id="gNum">72</div>
+                  <div class="of">/ 100</div>
+                </div>
+              </div>
+            </div>
+            <div style="flex:1;min-width:200px">
+              <span class="badge bg-warn" id="gBadge">🟡 <span data-i18n="fair">Fair</span></span>
+              <h3 style="font-size:22px;margin:12px 0 6px" data-i18n="dashMsg">Your router is mostly safe</h3>
+              <p class="hint" data-i18n="dashSub">Fix 3 small things to reach a perfect score.</p>
+              <button class="btn" style="margin-top:16px;max-width:240px" id="seeFixesBtn" onclick="app.navigate('scan')">
+                <span data-i18n="viewFixes">See top 3 fixes →</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="cta">
+          <div style="font-size:40px">🔍</div>
+          <h3 data-i18n="ctaT">Scan my router</h3>
+          <p data-i18n="ctaP">One button. Takes about 20 seconds.</p>
+          <button class="scan-btn" id="ctaScanBtn">
+            <span>▶️</span>
+            <span data-i18n="scanNow">Start scan</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Connected Devices & Environments -->
+      <div class="grid g2" style="margin-top:20px">
+        <div class="card">
+          <h3 data-i18n="devices">Connected devices</h3>
+          <p class="hint" data-i18n="devSub">Who is using your Wi-Fi right now</p>
+          <div class="devices" id="dashDeviceList">
+            <div class="dev"><span class="di">📱</span><div><div class="dn">Dad's Phone</div><div class="dm">192.168.1.12</div></div><span class="badge bg-good" style="margin-left:auto">● Online</span></div>
+            <div class="dev"><span class="di">💻</span><div><div class="dn">Laptop</div><div class="dm">192.168.1.15</div></div><span class="badge bg-good" style="margin-left:auto">● Online</span></div>
+            <div class="dev"><span class="di">📺</span><div><div class="dn">Smart TV</div><div class="dm">192.168.1.22</div></div><span class="badge bg-good" style="margin-left:auto">● Online</span></div>
+            <div class="dev"><span class="di">❓</span><div><div class="dn">Unknown device</div><div class="dm">192.168.1.47</div></div><span class="badge bg-warn" style="margin-left:auto">Check</span></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="usedBy">Made for everyone</h3>
+          <p class="hint" data-i18n="usedSub">Homes · Hostels · Small shops · Learners</p>
+          <div class="devices">
+            <div class="dev"><span class="di">🏡</span><div><div class="dn" data-i18n="uHome">Homes</div><div class="dm" data-i18n="uHomeD">Phones, laptops, smart TV</div></div></div>
+            <div class="dev"><span class="di">🎓</span><div><div class="dn" data-i18n="uHost">Hostels</div><div class="dm" data-i18n="uHostD">One Wi-Fi, many students</div></div></div>
+            <div class="dev"><span class="di">🏪</span><div><div class="dn" data-i18n="uShop">Small shops</div><div class="dm" data-i18n="uShopD">Protects billing devices</div></div></div>
+            <div class="dev"><span class="di">🛡️</span><div><div class="dn" data-i18n="uLearners">Cyber Learners</div><div class="dm" data-i18n="uLearnersD">Hands-on defensive security</div></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- How it Works: 4 Simple Steps Walkthrough -->
+      <div class="card" style="margin-top:20px">
+        <h3 data-i18n="guideTitle">How It Works: 4 Simple Steps</h3>
+        <p class="hint" data-i18n="guideSub">Check. Score. Fix in under 2 minutes.</p>
+        <div class="grid g4" style="margin-top:16px">
+          <div style="background:var(--bg);padding:18px;border-radius:16px;border:1px solid var(--line)">
+            <div style="font-size:28px;margin-bottom:8px">▶️</div>
+            <h4 data-i18n="step1T">1. Run</h4>
+            <p class="hint" data-i18n="step1D">Click the big Start Scan button on your laptop or phone.</p>
+          </div>
+          <div style="background:var(--bg);padding:18px;border-radius:16px;border:1px solid var(--line)">
+            <div style="font-size:28px;margin-bottom:8px">🔍</div>
+            <h4 data-i18n="step2T">2. Scan</h4>
+            <p class="hint" data-i18n="step2D">Our read-only diagnostic checks Wi-Fi, open ports, passwords, and DNS.</p>
+          </div>
+          <div style="background:var(--bg);padding:18px;border-radius:16px;border:1px solid var(--line)">
+            <div style="font-size:28px;margin-bottom:8px">💯</div>
+            <h4 data-i18n="step3T">3. Score</h4>
+            <p class="hint" data-i18n="step3D">Get an instant transparent score out of 100 with clear traffic-light colors.</p>
+          </div>
+          <div style="background:var(--bg);padding:18px;border-radius:16px;border:1px solid var(--line)">
+            <div style="font-size:28px;margin-bottom:8px">🛠️</div>
+            <h4 data-i18n="step4T">4. Fix</h4>
+            <p class="hint" data-i18n="step4D">Follow the top 3 simple picture steps to secure your network.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Comparison Table -->
+      <div class="card" style="margin-top:20px">
+        <h3 data-i18n="compTitle">How We Compare</h3>
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th data-i18n="compFeature">Feature</th>
+              <th style="color:var(--brand)" data-i18n="compUs">Router Health Checker</th>
+              <th data-i18n="compAdmin">Router Admin Page</th>
+              <th data-i18n="compNmap">Nmap / Nessus</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td data-i18n="compareLang">Language-Independent (12+ languages)</td>
+              <td>✅ Yes (Instant native text)</td>
+              <td>❌ English / Tech terms only</td>
+              <td>❌ English CLI only</td>
+            </tr>
+            <tr>
+              <td data-i18n="compareAi">Built-in AI Assistant with Voice</td>
+              <td>✅ Yes (Any language + Voice)</td>
+              <td>❌ No help system</td>
+              <td>❌ Raw port numbers</td>
+            </tr>
+            <tr>
+              <td data-i18n="compareMobile">Mobile &amp; Laptop Friendly</td>
+              <td>✅ Yes (Mobile-first tabs)</td>
+              <td>⚠️ Clunky on phone</td>
+              <td>❌ Command line only</td>
+            </tr>
+            <tr>
+              <td data-i18n="compareSimple">Plain Explanations &amp; Top 3 Fixes</td>
+              <td>✅ Exactly Top 3 prioritized</td>
+              <td>❌ No recommendations</td>
+              <td>❌ Dense CVE technical lists</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ================= 2. ROUTER CHECK ================= -->
+    <section class="page" id="scan">
+      <div class="card" style="margin-bottom:20px">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap">
+          <div>
+            <h3 style="font-size:20px" data-i18n="scanT">One-click router check</h3>
+            <p class="hint" data-i18n="scanP">We only read your settings. Nothing is changed.</p>
+          </div>
+          <button class="btn" style="width:auto;padding:16px 34px" id="scanBtn">
+            <span>▶️</span>
+            <span data-i18n="scanNow">Start scan</span>
+          </button>
+        </div>
+
+        <div class="progress"><i id="bar"></i></div>
+        <div class="hint" id="barTxt">0%</div>
+
+        <div class="checks" id="checks" style="margin-top:18px">
+          <div class="check" data-k="wifi"><div class="ci">📶</div><div><div class="t" data-i18n="cWifi">Wi-Fi security</div><div class="d">WPA2 / WPA3</div></div><span class="st">⏳</span></div>
+          <div class="check" data-k="admin"><div class="ci">🔑</div><div><div class="t" data-i18n="cAdmin">Admin password</div><div class="d">admin / admin ?</div></div><span class="st">⏳</span></div>
+          <div class="check" data-k="ports"><div class="ci">🚪</div><div><div class="t" data-i18n="cPorts">Open doors (ports)</div><div class="d">Telnet 23 · HTTP 80</div></div><span class="st">⏳</span></div>
+          <div class="check" data-k="wps"><div class="ci">🔓</div><div><div class="t" data-i18n="cWps">WPS PIN</div><div class="d">8-digit PIN vulnerability</div></div><span class="st">⏳</span></div>
+          <div class="check" data-k="dns"><div class="ci">🌍</div><div><div class="t" data-i18n="cDns">DNS resolver</div><div class="d">Trusted resolvers</div></div><span class="st">⏳</span></div>
+          <div class="check" data-k="fw"><div class="ci">🧩</div><div><div class="t" data-i18n="cFw">Router update</div><div class="d">Firmware patches</div></div><span class="st">⏳</span></div>
+        </div>
+      </div>
+
+      <!-- Scan Results & Top 3 Fixes -->
+      <div class="card hidden" id="result">
+        <div class="score-wrap" style="margin-bottom:14px">
+          <div class="gauge" style="width:150px;height:150px">
+            <svg width="150" height="150" viewBox="0 0 210 210">
+              <circle cx="105" cy="105" r="90" fill="none" stroke="var(--line)" stroke-width="20"/>
+              <circle id="ring2" cx="105" cy="105" r="90" fill="none" stroke="var(--warn)" stroke-width="20" stroke-linecap="round" stroke-dasharray="565.5" stroke-dashoffset="565.5" style="transition:stroke-dashoffset 1.2s"/>
+            </svg>
+            <div class="center">
+              <div>
+                <div class="num" style="font-size:40px" id="g2">0</div>
+                <div class="of">/ 100</div>
+              </div>
+            </div>
+          </div>
+          <div style="flex:1">
+            <h3 style="font-size:22px" data-i18n="top3">Top 3 fixes</h3>
+            <p class="hint" data-i18n="top3s">Do these first for the biggest improvement</p>
+            <div style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn ghost" id="printReportBtn" style="width:auto;padding:8px 16px;min-height:38px;font-size:13px" data-i18n="btnReport">📄 Download Report</button>
+              <button class="btn ghost" style="width:auto;padding:8px 16px;min-height:38px;font-size:13px" onclick="alert('Report saved locally to your device!')" data-i18n="btnFamilyShare">👨‍👩‍👧 Share with Family</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="fixesContainer">
+          <div class="fix">
+            <div class="n">1</div>
+            <div>
+              <h4 data-i18n="f1t">🔑 Change the admin password</h4>
+              <p data-i18n="f1d">Your router still uses a factory login. Choose a long, new password.</p>
+            </div>
+            <div class="gain">+12</div>
+          </div>
+          <div class="fix">
+            <div class="n">2</div>
+            <div>
+              <h4 data-i18n="f2t">🔓 Turn off WPS</h4>
+              <p data-i18n="f2d">The WPS PIN has only 8 digits and can be guessed. Switch it off in router settings.</p>
+            </div>
+            <div class="gain">+10</div>
+          </div>
+          <div class="fix">
+            <div class="n">3</div>
+            <div>
+              <h4 data-i18n="f3t">🚪 Close Telnet (port 23)</h4>
+              <p data-i18n="f3d">Telnet sends passwords without protection. Disable it.</p>
+            </div>
+            <div class="gain">+6</div>
+          </div>
+        </div>
+
+        <div class="ethics">
+          <span>🌿</span>
+          <span data-i18n="ethFull">Read-only checks. Your results stay on your device and are shown only to you.</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 3. STABILITY ================= -->
+    <section class="page" id="stab">
+      <div class="grid g3" style="margin-bottom:20px">
+        <div class="card stat"><div class="bubble b-green">🟢</div><div><div class="v">99.2%</div><div class="l" data-i18n="uptime">Uptime (7 days)</div></div></div>
+        <div class="card stat"><div class="bubble b-cyan">⏱️</div><div><div class="v">24 ms</div><div class="l" data-i18n="ping">Ping latency</div></div></div>
+        <div class="card stat"><div class="bubble b-amber">📉</div><div><div class="v">0.4%</div><div class="l" data-i18n="loss">Packet loss</div></div></div>
+      </div>
+
+      <div class="card">
+        <h3 data-i18n="hist">Connection history</h3>
+        <p class="hint" data-i18n="histS">Last 7 days · higher is better</p>
+        <div class="bars" id="bars" style="margin-top:20px;padding-bottom:26px"></div>
+      </div>
+
+      <div class="card" style="margin-top:20px">
+        <h3 data-i18n="devices">Connected devices</h3>
+        <p class="hint" data-i18n="devSub">Who is using your Wi-Fi right now</p>
+        <div class="devices" id="deviceList"></div>
+      </div>
+    </section>
+
+    <!-- ================= 4. SPEED ================= -->
+    <section class="page" id="speed">
+      <div class="grid g2">
+        <div class="card speedo" style="text-align:center;padding:40px 20px">
+          <div style="font-size:50px">⚡</div>
+          <div class="speed-num" id="spNum">48</div>
+          <div class="hint" style="font-size:15px;margin-bottom:18px">Mbps · <span data-i18n="sSpeed">Download speed</span></div>
+          <button class="btn" style="max-width:260px" id="speedBtn">
+            <span>▶️</span>
+            <span data-i18n="speedBtn">Test speed</span>
+          </button>
+        </div>
+
+        <div class="card">
+          <h3 data-i18n="details">Details</h3>
+          <div class="devices" style="margin-top:14px">
+            <div class="dev"><span class="di">⬇️</span><div><div class="dn" data-i18n="down">Download</div></div><b style="margin-left:auto" id="dn">48 Mbps</b></div>
+            <div class="dev"><span class="di">⬆️</span><div><div class="dn" data-i18n="up">Upload</div></div><b style="margin-left:auto" id="up">19 Mbps</b></div>
+            <div class="dev"><span class="di">⏱️</span><div><div class="dn">Ping</div></div><b style="margin-left:auto" id="pg">24 ms</b></div>
+            <div class="dev"><span class="di">🎬</span><div><div class="dn" data-i18n="canDo">Good for</div><div class="dm" data-i18n="goodForDesc">HD video · Calls · Browsing</div></div><span class="badge bg-good" style="margin-left:auto">👍</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 5. AI AGENT ================= -->
+    <section class="page" id="ai">
+      <div class="card chat">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px">
+          <div class="avatar" style="width:46px;height:46px">🤖</div>
+          <div>
+            <h3 data-i18n="aiT">AI Helper</h3>
+            <p class="hint" data-i18n="aiS">Ask by typing or speaking, in any language</p>
+          </div>
+        </div>
+
+        <div class="msgs" id="msgs">
+          <div class="m bot" data-i18n="aiHi">Hello! 👋 I can explain each risk and show you how to fix it, step by step. What would you like to know?</div>
+        </div>
+
+        <div class="chips">
+          <button class="chip" onclick="app.sendChatMessage(this.textContent)" data-i18n="chipPass">🔑 How to change my password?</button>
+          <button class="chip" onclick="app.sendChatMessage(this.textContent)" data-i18n="chipWps">🔓 What is WPS?</button>
+          <button class="chip" onclick="app.sendChatMessage(this.textContent)" data-i18n="chipSlow">📶 Why is Wi-Fi slow?</button>
+          <button class="chip" onclick="app.sendChatMessage(this.textContent)" data-i18n="chipSafe">🛡️ Is my router safe?</button>
+        </div>
+
+        <div class="composer">
+          <button class="mic" id="mic" title="Speak" aria-label="Microphone Voice Input">🎤</button>
+          <div class="input" style="flex:1">
+            <input id="chatIn" placeholder="Type your question…" data-i18n-placeholder="askPlaceholder">
+          </div>
+          <button class="send" id="sendBtn" title="Send" aria-label="Send Message">➤</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 6. SETTINGS ================= -->
+    <section class="page" id="settings">
+      <div class="grid g2">
+        <div class="card">
+          <h3 data-i18n="nSettings">Settings</h3>
+          <p class="hint">Preferences, accessibility, and local safety controls</p>
+          
+          <div style="margin-top:20px;display:flex;flex-direction:column;gap:16px">
+            <div>
+              <label style="font-weight:600;font-size:14px;display:block;margin-bottom:6px">High Contrast Theme</label>
+              <button class="btn ghost" onclick="app.applyTheme('high-contrast')" style="width:auto;padding:8px 18px" data-i18n="highContrast">High Contrast</button>
+            </div>
+
+            <div>
+              <label style="font-weight:600;font-size:14px;display:block;margin-bottom:6px">Kid Mode / Storybook View</label>
+              <button class="btn ghost" onclick="alert('Kid Mode: Your Wi-Fi is like a house. Keep the key safe!')" style="width:auto;padding:8px 18px">🧒 Toggle Kid Story Mode</button>
+            </div>
+
+            <div style="margin-top:10px;padding-top:16px;border-top:1px solid var(--line)">
+              <label style="font-weight:600;font-size:14px;display:block;color:var(--bad);margin-bottom:6px">Data Privacy</label>
+              <p class="hint" style="margin-bottom:10px">Permanently delete all stored scan history, speed tests, and device logs.</p>
+              <button class="btn" style="background:var(--bad);width:auto;padding:10px 20px" onclick="if(confirm('Delete all stored scans?')){fetch('/api/settings/delete-all',{method:'DELETE',headers:app.getHeaders()}).then(()=>alert('Data cleared successfully.'))}">🗑️ Delete All My Data</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="text-align:center">
+          <h3>📱 Open on Your Phone</h3>
+          <p class="hint" style="margin-bottom:18px">Scan this QR code from your phone on the same Wi-Fi</p>
+          <div style="display:grid;place-items:center;padding:10px">
+            <img src="/api/settings/qr" alt="QR Code for phone access" width="160" height="160">
+          </div>
+          <div style="margin-top:12px;font-size:13px;color:var(--muted)">Local Access: http://127.0.0.1:8000</div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- ================= MOBILE FIXED BOTTOM TAB BAR ================= -->
+<nav class="mobile-nav hidden" id="mnav" aria-label="Mobile Navigation">
+  <button data-page="dash" class="active"><span>🏠</span><b data-i18n="nDash">Home</b></button>
+  <button data-page="scan"><span>🛡️</span><b data-i18n="nScan">Check</b></button>
+  <button data-page="stab"><span>📈</span><b data-i18n="nStab">Stable</b></button>
+  <button data-page="speed"><span>⚡</span><b data-i18n="nSpeed">Speed</b></button>
+  <button data-page="ai"><span>🤖</span><b data-i18n="nAi">AI</b></button>
+</nav>
+
+<!-- ================= MANDATORY ETHICAL CONSENT MODAL ================= -->
+<div class="modal-overlay hidden" id="consentModal" role="dialog" aria-modal="true">
+  <div class="modal-card">
+    <div style="font-size:36px;margin-bottom:8px">🌿</div>
+    <h3 data-i18n="consentTitle">Ethical Use Consent</h3>
+    <p class="hint" style="font-size:14.5px;line-height:1.6" data-i18n="consentDesc">
+      I will scan only my own router or a network I have written permission to test. Results are read-only and remain strictly on this device (Indian IT Act 2000, Sec. 43 &amp; 66).
+    </p>
+
+    <div style="margin:20px 0;display:flex;align-items:flex-start;gap:12px">
+      <input type="checkbox" id="consentChk" style="width:20px;height:20px;margin-top:2px;cursor:pointer">
+      <label for="consentChk" style="font-size:14px;cursor:pointer;font-weight:600" data-i18n="consentCheckbox">
+        I confirm this is my own router and I accept the terms.
+      </label>
+    </div>
+
+    <div style="display:flex;gap:12px">
+      <button class="btn" id="acceptConsentBtn" data-i18n="consentAccept">Accept and Continue</button>
+      <button class="btn ghost" id="cancelConsentBtn" data-i18n="consentCancel">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- Vendored Chart Library & Main Application Logic -->
+<script src="/static/vendor/chart.umd.min.js"></script>
+<script type="module" src="/static/js/app.js"></script>
+</body>
+</html>
